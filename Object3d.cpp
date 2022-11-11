@@ -407,7 +407,7 @@ void Object3d::CreateModel()
 		//ファイルストリーム
 		std::ifstream file;
 		// .objファイルを開く
-		file.open("Resources/triangle/triangle.obj");
+		file.open("Resources/triangle_tex/triangle_tex.obj");
 		// ファイルオープン失敗をチェック
 		assert(!file.fail());
 		std::vector<XMFLOAT3> positions; //頂点座標
@@ -433,10 +433,20 @@ void Object3d::CreateModel()
 				line_stream >> position.z;
 				//座標データに追加
 				positions.emplace_back(position);
-				//頂点データに追加
-				VertexPosNormalUv vertex{};
-				vertex.pos = position;
-				vertices.emplace_back(vertex);
+				////頂点データに追加
+				//VertexPosNormalUv vertex{};
+				//vertex.pos = position;
+				//vertices.emplace_back(vertex);
+			}
+
+			//先頭文字列がvtならテクスチャ
+			if (key == "vt") {
+				//U.V成分読み込み
+				XMFLOAT2 texcoord{};
+				line_stream >> texcoord.x;
+				line_stream >> texcoord.y;
+				//V方向反転
+				texcoord.y = 1.0f - texcoord.y;
 			}
 
 			//先頭文字列がfならポリゴン(三角形)
