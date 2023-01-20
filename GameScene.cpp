@@ -32,39 +32,68 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input)
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
-	// 3Dオブジェクト生成
-	object3d = Object3d::Create();
-	object3d->Update();
+
+	//モデル読み込み
+	//立方体
+	XMFLOAT3 minModel = {}, maxModel = {};
+	Model* model = Model::LoadFromObj("cone", minModel, maxModel);
+	minModel = model->GetminModel();
+	maxModel = model->GetmaxModel();
+	//円柱
+	XMFLOAT3 minModel2 = {}, maxModel2 = {};
+	Model* model2 = Model::LoadFromObj("cylinder", minModel2, maxModel2);
+	minModel2 = model2->GetminModel();
+	maxModel2 = model2->GetmaxModel();
+
+	//円柱
+	cylinder = Object3d::Create();
+	cylinder->SetModel(model2);
+	cylinder->SetPosition({ 5.0, 0, 0 });
+
+	//立方体
+	cube = Object3d::Create();
+	//オブジェクトにモデルを紐づける
+	cube->SetModel(model);
 }
 
 void GameScene::Update()
 {
-	// オブジェクト移動
+	// 円柱移動
 	if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT))
 	{
 		// 現在の座標を取得
-		XMFLOAT3 position = object3d->GetPosition();
+		XMFLOAT3 position = cylinder->GetPosition();
 
 		// 移動後の座標を計算
-		if (input->PushKey(DIK_UP)) { position.z += 1.0f; }
-		else if (input->PushKey(DIK_DOWN)) { position.z -= 1.0f; }
-		if (input->PushKey(DIK_RIGHT)) { position.x += 1.0f; }
-		else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
+		if (input->PushKey(DIK_UP)) { position.z += 0.5f; }
+		else if (input->PushKey(DIK_DOWN)) { position.z -= 0.5f; }
+		if (input->PushKey(DIK_RIGHT)) { position.x += 0.5f; }
+		else if (input->PushKey(DIK_LEFT)) { position.x -= 0.5f; }
 
 		// 座標の変更を反映
-		object3d->SetPosition(position);
+		cylinder->SetPosition(position);
 	}
 
-	// カメラ移動
+	// 立方体移動
 	if (input->PushKey(DIK_W) || input->PushKey(DIK_S) || input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
-		if (input->PushKey(DIK_W)) { Object3d::CameraMoveVector({ 0.0f,+1.0f,0.0f }); }
-		else if (input->PushKey(DIK_S)) { Object3d::CameraMoveVector({ 0.0f,-1.0f,0.0f }); }
-		if (input->PushKey(DIK_D)) { Object3d::CameraMoveVector({ +1.0f,0.0f,0.0f }); }
-		else if (input->PushKey(DIK_A)) { Object3d::CameraMoveVector({ -1.0f,0.0f,0.0f }); }
-	}
+		// 現在の座標を取得
+		XMFLOAT3 position = cube->GetPosition();
 
-	object3d->Update();
+		// 移動後の座標を計算
+		if (input->PushKey(DIK_W)) { position.z += 0.5f; }
+		else if (input->PushKey(DIK_S)) { position.z -= 0.5f; }
+		if (input->PushKey(DIK_D)) { position.x += 0.5f; }
+		else if (input->PushKey(DIK_A)) { position.x -= 0.5f; }
+
+		// 座標の変更を反映
+		cube->SetPosition(position);
+	}
+	cylinder->Update();
+
+	cube->Update();
+
+	
 }
 
 void GameScene::Draw()
@@ -93,8 +122,9 @@ void GameScene::Draw()
 	Object3d::PreDraw(cmdList);
 
 	// 3Dオブクジェクトの描画
-	object3d->Draw();
+	cylinder->Draw();
 
+	cube->Draw();
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
