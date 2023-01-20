@@ -27,8 +27,8 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input)
 	// デバッグテキスト初期化
 	debugText.Initialize(debugTextTexNumber);
 
-	// テクスチャ読み込み
-	Sprite::LoadTexture(1, L"Resources/background.png");
+	//// テクスチャ読み込み
+	//Sprite::LoadTexture(1, L"Resources/background.png");
 
 	// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
@@ -46,8 +46,8 @@ void GameScene::Update()
 		XMFLOAT3 position = object3d->GetPosition();
 
 		// 移動後の座標を計算
-		if (input->PushKey(DIK_UP)) { position.y += 1.0f; }
-		else if (input->PushKey(DIK_DOWN)) { position.y -= 1.0f; }
+		if (input->PushKey(DIK_UP)) { position.z += 1.0f; }
+		else if (input->PushKey(DIK_DOWN)) { position.z -= 1.0f; }
 		if (input->PushKey(DIK_RIGHT)) { position.x += 1.0f; }
 		else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
 

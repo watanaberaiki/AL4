@@ -5,6 +5,7 @@
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <d3dx12.h>
+#include<string.h>
 
 /// <summary>
 /// 3Dオブジェクト
@@ -30,10 +31,19 @@ public: // サブクラス
 	};
 
 	// 定数バッファ用データ構造体
-	struct ConstBufferData
+	struct ConstBufferDataB0
 	{
-		XMFLOAT4 color;	// 色 (RGBA)
+		//XMFLOAT4 color;	// 色 (RGBA)
 		XMMATRIX mat;	// ３Ｄ変換行列
+	};
+
+	struct ConstBufferDataB1 {
+		XMFLOAT3 ambient;	//アンビエント係数
+		float pad1;			//パティング
+		XMFLOAT3 diffuse;	//ディフーズ係数
+		float pad2;			//パティング
+		XMFLOAT3 specular;	//スペキュラー係数
+		float alpha;		//アルファ
 	};
 
 private: // 定数
@@ -139,7 +149,7 @@ private: // 静的メンバ変数
 	// 頂点データ配列
 	/*static VertexPosNormalUv vertices[vertexCount];*/
 	static std::vector<VertexPosNormalUv>vertices;
-	
+
 	// 頂点インデックス配列
 	/*static unsigned short indices[planeCount * 3];*/
 	static std::vector<unsigned short>indices;
@@ -166,7 +176,7 @@ private:// 静的メンバ関数
 	/// <summary>
 	/// テクスチャ読み込み
 	/// </summary>
-	static void LoadTexture();
+	static void LoadTexture(const std::string& directoryPath, const std::string& filename);
 
 	/// <summary>
 	/// モデル作成
@@ -202,8 +212,17 @@ public: // メンバ関数
 	/// <param name="position">座標</param>
 	void SetPosition(const XMFLOAT3& position) { this->position = position; }
 
+	/// <summary>
+	//マテリアル読み込み
+	/// </summary>
+	static void LoadMaterial(const std::string& directoryPath, const std::string& filename);
+
 private: // メンバ変数
-	ComPtr<ID3D12Resource> constBuff; // 定数バッファ
+	//ComPtr<ID3D12Resource> constBuff; // 定数バッファ
+
+	ComPtr<ID3D12Resource> constBuffB0; // 定数バッファ
+	ComPtr<ID3D12Resource> constBuffB1; // 定数バッファ
+
 	// 色
 	XMFLOAT4 color = { 1,1,1,1 };
 	// ローカルスケール
@@ -211,10 +230,30 @@ private: // メンバ変数
 	// X,Y,Z軸回りのローカル回転角
 	XMFLOAT3 rotation = { 0,0,0 };
 	// ローカル座標
-	XMFLOAT3 position = { 0,0,0 };
+	XMFLOAT3 position = { 5,0,0 };
 	// ローカルワールド変換行列
 	XMMATRIX matWorld;
 	// 親オブジェクト
 	Object3d* parent = nullptr;
+
+	//マテリアル
+	struct Material
+	{
+		std::string name; //マテリアル名
+		XMFLOAT3 ambient; //アンビエント影響度
+		XMFLOAT3 diffuse; //ディフューズ影響度
+		XMFLOAT3 specular; //スペキュラー影響度
+		float alpha; //アルファ
+		std::string textureFilename; //テクスチャファイル名
+		//コンストラクタ
+		Material() {
+			ambient = { 0.3f,0.3f,0.3f };
+			diffuse = { 0.0f,0.0f,0.0f };
+			specular = { 0.0f,0.0f,0.0f };
+			alpha = 1.0f;
+		}
+	};
+
+	static Material material;
 };
 
